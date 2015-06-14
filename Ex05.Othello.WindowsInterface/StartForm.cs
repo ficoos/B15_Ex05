@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using Ex02.Othello;
 
@@ -17,7 +15,7 @@ namespace Ex05.Othello.WindowsInterface
 		{
 			get
 			{
-				return GameBoard.ValidBoardSizes[m_BoardSizeIndex % GameBoard.ValidBoardSizes.Length];
+				return GameBoard.ValidBoardSizes[m_BoardSizeIndex];
 			}
 		}
 
@@ -30,9 +28,9 @@ namespace Ex05.Othello.WindowsInterface
 		private void initializeComponent()
 		{
 			const int v_Margin = 12;
-			this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+			FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			MaximizeBox = false;
-			this.Text = "Othello - Game Settings";
+			Text = "Othello - Game Settings";
 
 			m_BoardSizeButton = new Button();
 			m_BoardSizeButton.Text = string.Format("Board Size = {0}x{0} (Click to increase)", this.selectedBoardSize);
@@ -41,7 +39,7 @@ namespace Ex05.Othello.WindowsInterface
 			m_BoardSizeButton.Width = ClientSize.Width - (v_Margin * 2);
 			m_BoardSizeButton.Height = 40;
 			m_BoardSizeButton.Click += m_BoardSizeButton_Click;
-			this.Controls.Add(m_BoardSizeButton);
+			Controls.Add(m_BoardSizeButton);
 
 			m_PlayAgainstComputerButton = new Button();
 			m_PlayAgainstComputerButton.Text = "Play against the computer";
@@ -49,8 +47,8 @@ namespace Ex05.Othello.WindowsInterface
 			m_PlayAgainstComputerButton.Left = v_Margin;
 			m_PlayAgainstComputerButton.Width = (m_BoardSizeButton.Width - v_Margin) / 2;
 			m_PlayAgainstComputerButton.Height = 40;
-			m_PlayAgainstComputerButton.Click += this.playButtons_Click;
-			this.Controls.Add(m_PlayAgainstComputerButton);
+			m_PlayAgainstComputerButton.Click += playButtons_Click;
+			Controls.Add(m_PlayAgainstComputerButton);
 
 			m_PlayAgainstFriendButton = new Button();
 			m_PlayAgainstFriendButton.Text = "Play against your friend";
@@ -58,17 +56,16 @@ namespace Ex05.Othello.WindowsInterface
 			m_PlayAgainstFriendButton.Left = m_PlayAgainstComputerButton.Right + v_Margin;
 			m_PlayAgainstFriendButton.Width = m_PlayAgainstComputerButton.Width;
 			m_PlayAgainstFriendButton.Height = m_PlayAgainstComputerButton.Height;
-			m_PlayAgainstFriendButton.Click += this.playButtons_Click;
-			this.Controls.Add(m_PlayAgainstFriendButton);
+			m_PlayAgainstFriendButton.Click += playButtons_Click;
+			Controls.Add(m_PlayAgainstFriendButton);
 			
-
 			Height = (Height - ClientSize.Height) + m_PlayAgainstComputerButton.Bottom + v_Margin;
 		}
 
 		private void m_BoardSizeButton_Click(object i_Sender, EventArgs i_Args)
 		{
-			this.m_BoardSizeIndex++;
-			m_BoardSizeButton.Text = string.Format("Board Size = {0}x{0} (Click to increase)", this.selectedBoardSize);
+			m_BoardSizeIndex = (m_BoardSizeIndex + 1) % GameBoard.ValidBoardSizes.Length;
+			m_BoardSizeButton.Text = string.Format("Board Size = {0}x{0} (Click to increase)", selectedBoardSize);
 		}
 
 		private void playButtons_Click(object i_Sender, EventArgs i_Args)

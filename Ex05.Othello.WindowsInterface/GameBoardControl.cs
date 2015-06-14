@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Windows.Forms;
+
+using Ex02.Othello;
 
 namespace Ex05.Othello.WindowsInterface
 {
-	using System.ComponentModel;
-	using System.Drawing;
-	using System.Security.Cryptography.X509Certificates;
-	using System.Windows.Forms;
-
-	using Ex02.Othello;
-
 	public class GameBoardControl : Control
 	{
 		public delegate void CellClickDelegate(object i_Sender, BoardPosition i_BoardPosition);
 
-		private CellButton[,] r_CellButtons;
+		public event CellClickDelegate CellClick;
+
+		private CellButton[,] m_CellButtons;
 
 		private GameBoard m_Board;
 
@@ -29,7 +25,7 @@ namespace Ex05.Othello.WindowsInterface
 			set
 			{
 				m_Board = value;
-				this.r_CellButtons = new CellButton[m_Board.Size, m_Board.Size];
+				this.m_CellButtons = new CellButton[m_Board.Size, m_Board.Size];
 				this.populateControl();
 			}
 		}
@@ -53,7 +49,7 @@ namespace Ex05.Othello.WindowsInterface
 			{
 				for (int x = 0; x < boardSize; x++)
 				{
-					CellButton cellButton = this.r_CellButtons[x, y];
+					CellButton cellButton = this.m_CellButtons[x, y];
 					cellButton.Left = buttonWidth * x;
 					cellButton.Top = buttonHeight * y;
 					cellButton.Height = buttonHeight;
@@ -69,7 +65,7 @@ namespace Ex05.Othello.WindowsInterface
 			{
 				for (int x = 0; x < boardSize; x++)
 				{
-					r_CellButtons[x, y].Selectable = false;
+					this.m_CellButtons[x, y].Selectable = false;
 				}
 			}
 		}
@@ -84,7 +80,7 @@ namespace Ex05.Othello.WindowsInterface
 				{
 					CellButton cellButton = new CellButton(new BoardPosition(x, y));		
 					cellButton.Click += cellButton_Click;
-					this.r_CellButtons[x, y] = cellButton;
+					this.m_CellButtons[x, y] = cellButton;
 					this.Controls.Add(cellButton);
 				}
 			}
@@ -106,12 +102,10 @@ namespace Ex05.Othello.WindowsInterface
 			{
 				for (int x = 0; x < boardSize; x++)
 				{
-					this.r_CellButtons[x, y].Content = m_Board[x, y].Content;
+					this.m_CellButtons[x, y].Content = m_Board[x, y].Content;
 				}
 			}
 		}
-
-		public event CellClickDelegate CellClick;
 
 		protected virtual void OnCellClick(BoardPosition i_BoardPosition)
 		{
@@ -133,7 +127,7 @@ namespace Ex05.Othello.WindowsInterface
 			{
 				foreach (BoardPosition boardPosition in i_LegalMoves)
 				{
-					CellButton cellButton = r_CellButtons[boardPosition.X, boardPosition.Y];
+					CellButton cellButton = this.m_CellButtons[boardPosition.X, boardPosition.Y];
 					cellButton.Selectable = true;
 				}
 			}

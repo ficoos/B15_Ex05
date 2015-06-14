@@ -9,19 +9,12 @@ namespace Ex05.Othello.WindowsInterface
 	public class GameForm : Form
 	{
 		private readonly int r_BoardSize;
-
 		private readonly bool r_PlayAgainstAi;
-
 		private Game m_Game;
-
 		private GameBoardControl m_GameBoard;
-
 		private Thread m_GameThread;
-
 		private bool m_IsRunning;
-
 		private BoardControlPlayerController[] m_PlayerControllers;
-
 		private int m_BlackWins;
 		private int m_WhiteWins;
 
@@ -32,7 +25,7 @@ namespace Ex05.Othello.WindowsInterface
 			r_BoardSize = i_BoardSize;
 			r_PlayAgainstAi = i_PlayAgainstAi;
 			initializeControl();
-			this.resetGame();
+			resetGame();
 		}
 
 		protected override void OnLoad(EventArgs i_Args)
@@ -73,6 +66,50 @@ namespace Ex05.Othello.WindowsInterface
 			base.OnClosed(i_Args);
 		}
 
+		private DialogResult showGameOverMessageBox()
+		{
+			return MessageBox.Show(
+				this.getGameOverMessage(),
+				"Othello",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Information,
+				MessageBoxDefaultButton.Button1);
+		}
+
+		private string getGameOverMessage()
+		{
+			string message;
+			bool isTie = this.m_Game.Winner == null;
+			if (isTie)
+			{
+				message = 
+@"It's a tie
+Would you like to play another round?";
+			}
+			else
+			{
+				if (this.m_Game.Winner.Color == ePlayerColor.Black)
+				{
+					this.m_BlackWins++;
+				}
+				else
+				{
+					this.m_WhiteWins++;
+				}
+
+				message = string.Format(
+@"{0} won!! ({1}/{2}) ({3}/{4})
+Would you like another round?",
+					this.m_Game.Winner.Color == ePlayerColor.Black ? "Black" : "White",
+					this.m_Game.Winner.Score,
+					this.m_Game.Looser.Score,
+					this.m_Game.Winner.Color == ePlayerColor.Black ? this.m_BlackWins : this.m_WhiteWins,
+					this.m_Game.Looser.Color == ePlayerColor.Black ? this.m_BlackWins : this.m_WhiteWins);
+			}
+
+			return message;
+		}
+
 		private void runGame()
 		{
 			while (m_IsRunning)
@@ -82,38 +119,8 @@ namespace Ex05.Othello.WindowsInterface
 				{
 					case eIterationResult.GameOver:
 						m_IsRunning = false;
-						bool isTie = m_Game.Winner == null;
-						string message;
-						if (isTie)
-						{
-							message = "It's a tie\nWould you like to play another round?";
-						}
-						else
-						{
-							if (m_Game.Winner.Color == ePlayerColor.Black)
-							{
-								m_BlackWins++;
-							}
-							else
-							{
-								m_WhiteWins++;
-							}
-
-							message = string.Format(
-								@"{0} won!! ({1}/{2}) ({3}/{4})
-Would you like another round?",
-								m_Game.Winner.Color == ePlayerColor.Black ? "Black" : "White",
-								m_Game.Winner.Score,
-								m_Game.Looser.Score,
-								m_Game.Winner.Color == ePlayerColor.Black ? m_BlackWins : m_WhiteWins,
-								m_Game.Looser.Color == ePlayerColor.Black ? m_BlackWins : m_WhiteWins);
-						}
-						if (MessageBox.Show(
-							message,
-							"Othello",
-							MessageBoxButtons.YesNo,
-							MessageBoxIcon.Information,
-							MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+						
+						if (this.showGameOverMessageBox() == DialogResult.Yes)
 						{
 							Invoke(new Action(resetGame));
 						}
